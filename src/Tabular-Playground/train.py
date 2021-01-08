@@ -9,10 +9,14 @@ from optim.bayesian_optim import lgb_roc_eval, lgb_parameter
 np.seterr(divide="ignore", invalid="ignore")
 
 bayesian_params = {
+    "learning_rate": (0.0001, 0.05),
+    "reg_lambda": (0, 1),
+    "reg_alpha": (0, 1),
     "num_leaves": (100, 200),
     "max_depth": (17, 25),
     "min_split_gain": (0.001, 0.1),
     "min_child_weight": (10, 25),
+    "min_child_samples": (20, 50),
 }
 
 lgb_bo = lgb_parameter(lgb_roc_eval, bayesian_params)
@@ -23,11 +27,14 @@ params = {
     "verbosity": -1,
     "boosting_type": "gbdt",
     "feature_pre_filter": False,
-    "learning_rate": 0.05,
+    "learning_rate": max(min(lgb_bo["learning_rate"], 1), 0),
+    "reg_lambda": max(min(lgb_bo["reg_lambda"], 1), 0),
+    "reg_alpha": max(min(lgb_bo["reg_alpha"], 1), 0),
     "num_leaves": int(round(lgb_bo["num_leaves"])),
     "max_depth": int(round(lgb_bo["max_depth"])),
     "min_split_gain": max(min(lgb_bo["min_split_gain"], 1), 0),
     "min_child_weight": max(min(lgb_bo["min_child_weight"], 1), 0),
+    "min_child_samples": int(round(lgb_bo["min_child_samples"])),
 }
 
 if __name__ == "__main__":
