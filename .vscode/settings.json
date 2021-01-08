@@ -1,0 +1,13 @@
+{
+    "python.pythonPath": "/home/leewook/anaconda3/envs/tabular/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length=88"],
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "88"
+    ],
+    "editor.formatOnSave": true,
+    "python.linting.enabled": true
+}
