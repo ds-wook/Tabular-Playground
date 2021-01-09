@@ -48,9 +48,6 @@ if __name__ == "__main__":
     }
 
     cat_params = {
-        "iterations": 100,
-        "loss_function": "RMSE",
-        "verbose": False,
         "depth": (4, 10),
         "bagging_temperature": (0.1, 10),
         "l2_leaf_reg": (0.1, 10),
