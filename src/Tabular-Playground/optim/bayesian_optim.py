@@ -61,5 +61,5 @@ def cat_rmse_eval(
 def cat_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
     cat_bo = BayesianOptimization(f=func, pbounds=params)
     cat_bo.maximize(init_points=5, n_iter=10)
-    print("Ooptimization params:", cat_bo.max["params"])
+    print("Optimization params:", cat_bo.max["params"])
     return cat_bo.max["params"]
