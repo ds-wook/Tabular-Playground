@@ -48,9 +48,9 @@ def cat_rmse_eval(
         "loss_function": "RMSE",
         "verbose": False,
         "depth": int(round(depth)),
-        "bagging_temperature": bagging_temperature,
-        "learning_rate": learning_rate,
-        "l2_leaf_reg": l2_leaf_reg,
+        "bagging_temperature": max(min(bagging_temperature, 1), 0),
+        "learning_rate": max(min(learning_rate, 1), 0),
+        "l2_leaf_reg": max(min(l2_leaf_reg, 1), 0),
     }
     model = CatBoostRegressor(**params)
     scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
