@@ -1,10 +1,12 @@
+import argparse
+
 import numpy as np
 from sklearn.model_selection import KFold
 from lightgbm import LGBMRegressor
 from tqdm import tqdm
 
 from data.datasets import X, X_test, y, submission
-from optim.bayesian_optim import lgb_roc_eval, lgb_parameter
+from optim.bayesian_optim import lgb_rmse_eval, lgb_parameter
 
 np.seterr(divide="ignore", invalid="ignore")
 
@@ -13,13 +15,10 @@ bayesian_params = {
     "reg_lambda": (0, 1),
     "reg_alpha": (0, 1),
     "num_leaves": (100, 200),
-    "max_depth": (17, 25),
-    "min_split_gain": (0.001, 0.1),
-    "min_child_weight": (10, 25),
     "min_child_samples": (20, 50),
 }
 
-lgb_bo = lgb_parameter(lgb_roc_eval, bayesian_params)
+lgb_bo = lgb_parameter(lgb_rmse_eval, bayesian_params)
 
 params = {
     "n_estimators": 10000,
@@ -31,14 +30,19 @@ params = {
     "reg_lambda": max(min(lgb_bo["reg_lambda"], 1), 0),
     "reg_alpha": max(min(lgb_bo["reg_alpha"], 1), 0),
     "num_leaves": int(round(lgb_bo["num_leaves"])),
-    "max_depth": int(round(lgb_bo["max_depth"])),
-    "min_split_gain": max(min(lgb_bo["min_split_gain"], 1), 0),
-    "min_child_weight": max(min(lgb_bo["min_child_weight"], 1), 0),
     "min_child_samples": int(round(lgb_bo["min_child_samples"])),
 }
 
 if __name__ == "__main__":
-    n_fold = 5
+    parse = argparse.ArgumentParser("Training!")
+    parse.add_argument(
+        "--path", type=str, help="Input data save path", default="../../res/"
+    )
+    parse.add_argument("--file", type=str, help="Input file name", default="model.csv")
+    parse.add_argument("--fold", type=int, help="Input num_fold", default=5)
+    args = parse.parse_args()
+
+    n_fold = args.fold
     kf = KFold(n_splits=n_fold)
     oof = np.zeros(len(y))
     y_preds = np.zeros(len(X_test))
@@ -61,4 +65,4 @@ if __name__ == "__main__":
         del X_train, X_valid, y_train, y_valid
 
     submission["target"] = y_preds
-    submission.to_csv("../../res/baseline_submission.csv", index=False)
+    submission.to_csv(args.path + args.file, index=False)
