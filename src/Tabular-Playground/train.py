@@ -35,9 +35,7 @@ params = {
 
 if __name__ == "__main__":
     parse = argparse.ArgumentParser("Training!")
-    parse.add_argument(
-        "--path", type=str, help="Input data save path", default="../../res/"
-    )
+    parse.add_argument("--path", type=str, help="Input data save path", default="")
     parse.add_argument("--file", type=str, help="Input file name", default="model.csv")
     parse.add_argument("--fold", type=int, help="Input num_fold", default=5)
     args = parse.parse_args()

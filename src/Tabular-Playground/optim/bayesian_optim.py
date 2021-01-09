@@ -21,7 +21,6 @@ def lgb_rmse_eval(
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "feature_pre_filter": False,
         "learning_rate": max(min(learning_rate, 1), 0),
         "reg_lambda": max(min(reg_lambda, 1), 0),
         "reg_alpha": max(min(reg_alpha, 1), 0),
