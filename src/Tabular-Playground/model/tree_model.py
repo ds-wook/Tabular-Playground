@@ -3,6 +3,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold
+from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 
 
@@ -12,7 +13,7 @@ def kfold_model(
     folds = KFold(n_splits=n_fold)
     splits = folds.split(train, target)
     y_preds = np.zeros(test.shape[0])
-
+    oof_preds = np.zeros(train.shape[0])
     for fold_n, (train_index, valid_index) in tqdm(enumerate(splits)):
         model_name = model.__class__.__name__
         print(f"\t{model_name} Learning Start!")
@@ -29,8 +30,8 @@ def kfold_model(
                 early_stopping_rounds=100,
                 verbose=100,
             )
+            oof_preds[valid_index] = model.predict(X_valid)
             y_preds += model.predict(test) / n_fold
-
         else:
             model.fit(
                 X_train,
@@ -39,7 +40,8 @@ def kfold_model(
                 early_stopping_rounds=100,
                 verbose=100,
             )
+            oof_preds[valid_index] = model.predict(X_valid)
             y_preds += model.predict(test) / n_fold
         del X_train, X_valid, y_train, y_valid
-
+    print(f"OOF Score{mean_squared_error(target, oof_preds, squared=False):.5f}")
     return y_preds

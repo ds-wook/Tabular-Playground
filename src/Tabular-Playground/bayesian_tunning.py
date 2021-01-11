@@ -16,24 +16,31 @@ np.seterr(divide="ignore", invalid="ignore")
 if __name__ == "__main__":
     lgb_params = {
         "learning_rate": (0.0001, 0.05),
-        "reg_lambda": (0, 1),
-        "reg_alpha": (0, 1),
+        "reg_lambda": (0, 5),
+        "reg_alpha": (0, 5),
+        "feature_fraction": (0, 1),
+        "bagging_fraction": (0, 1),
         "num_leaves": (100, 200),
-        "min_child_samples": (20, 50),
+        "min_child_samples": (10, 50),
     }
     lgb_bo = lgb_parameter(lgb_rmse_eval, lgb_params)
 
     lgb_params = {
-        "n_estimators": 10000,
+        "n_estimators": 20000,
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
         "learning_rate": max(min(lgb_bo["learning_rate"], 1), 0),
         "reg_lambda": max(min(lgb_bo["reg_lambda"], 1), 0),
         "reg_alpha": max(min(lgb_bo["reg_alpha"], 1), 0),
+        "feature_fraction": max(min(lgb_bo["feature_fraction"], 1), 0),
+        "bagging_fraction": max(min(lgb_bo["bagging_fraction"], 1), 0),
         "num_leaves": int(round(lgb_bo["num_leaves"])),
         "min_child_samples": int(round(lgb_bo["min_child_samples"])),
     }
+
+    with open("../../res/lgb_bayesian.pkl", "wb") as f:
+        pickle.dump(lgb_params, f)
 
     xgb_params = {
         "min_child_weight": (3, 20),
@@ -58,6 +65,9 @@ if __name__ == "__main__":
         "min_child_weight": int(round(xgb_bo["min_child_weight"])),
     }
 
+    with open("../../res/xgb_bayesian.pkl", "wb") as f:
+        pickle.dump(xgb_params, f)
+
     cat_params = {
         "depth": (4, 10),
         "bagging_temperature": (0.1, 10),
@@ -75,14 +85,8 @@ if __name__ == "__main__":
         "l2_leaf_reg": max(min(cat_bo["l2_leaf_reg"], 1), 0),
         "learning_rate": cat_bo["learning_rate"],
     }
-
+    with open("../../res/cat_bayesian.pkl", "wb") as f:
+        pickle.dump(cat_params, f)
     print("LGBM Optimization params: ", lgb_bo)
     print("XGB Optimization params: ", xgb_bo)
     print("CAT Optimization params: ", cat_bo)
-
-    bo_optim = [lgb_params, xgb_params, cat_params]
-    bo_name = ["lgb_optim.pkl", "xgb_optim.pkl", "cat_optim.pkl"]
-
-    for b, n in zip(bo_optim, bo_name):
-        with open("../../res/" + n, "wb") as f:
-            pickle.dump(b, f)

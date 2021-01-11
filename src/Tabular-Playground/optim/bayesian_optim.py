@@ -15,6 +15,8 @@ def lgb_rmse_eval(
     reg_lambda: float,
     reg_alpha: float,
     num_leaves: float,
+    feature_fraction: float,
+    bagging_fraction: float,
     min_child_samples: float,
 ) -> float:
     params = {
@@ -25,6 +27,8 @@ def lgb_rmse_eval(
         "learning_rate": max(min(learning_rate, 1), 0),
         "reg_lambda": max(min(reg_lambda, 1), 0),
         "reg_alpha": max(min(reg_alpha, 1), 0),
+        "feature_fraction": max(min(feature_fraction, 1), 0),
+        "bagging_fraction": max(min(bagging_fraction, 1), 0),
         "num_leaves": int(round(num_leaves)),
         "min_child_samples": int(round(min_child_samples)),
     }
@@ -36,7 +40,7 @@ def lgb_rmse_eval(
 
 def lgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
     lgbm_bo = BayesianOptimization(f=func, pbounds=params)
-    lgbm_bo.maximize(init_points=5, n_iter=20)
+    lgbm_bo.maximize(init_points=5, n_iter=25)
     return lgbm_bo.max["params"]
 
 
