@@ -74,10 +74,8 @@ def xgb_rmse_eval(
 ) -> float:
     params = {
         "n_estimators": 10000,
-        "objective": "regression",
-        "metric": "rmse",
-        "verbosity": -1,
-        "boosting_type": "gbdt",
+        "objective": "reg:squarederror",
+        "eval_metric": "rmse",
         "learning_rate": learning_rate,
         "gamma": gamma,
         "subsample": subsample,

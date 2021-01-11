@@ -47,9 +47,8 @@ if __name__ == "__main__":
 
     xgb_params = {
         "n_estimators": 10000,
-        "objective": "regression",
-        "metric": "rmse",
-        "verbosity": -1,
+        "objective": "reg:squarederror",
+        "eval_metric": "rmse",
         "boosting_type": "gbdt",
         "learning_rate": xgb_bo["learning_rate"],
         "gamma": xgb_bo["gamma"],
@@ -81,7 +80,7 @@ if __name__ == "__main__":
     print("XGB Optimization params: ", xgb_bo)
     print("CAT Optimization params: ", cat_bo)
 
-    bo_optim = [lgb_bo, xgb_bo, cat_bo]
+    bo_optim = [lgb_params, xgb_params, cat_params]
     bo_name = ["lgb_optim.pkl", "xgb_optim.pkl", "cat_optim.pkl"]
 
     for b, n in zip(bo_optim, bo_name):
