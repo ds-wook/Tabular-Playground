@@ -14,7 +14,11 @@ params = {
     "boosting_type": "gbdt",
 }
 model = lgb.train(
-    params, dtrain, valid_sets=[dval], verbose_eval=100, early_stopping_rounds=100
+    params,
+    dtrain,
+    valid_sets=[dtrain, dval],
+    verbose_eval=100,
+    early_stopping_rounds=100,
 )
 
 params = model.params
