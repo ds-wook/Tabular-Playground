@@ -15,7 +15,7 @@ np.seterr(divide="ignore", invalid="ignore")
 
 if __name__ == "__main__":
     lgb_params = {
-        "learning_rate": (0.0001, 0.05),
+        "max_depth": (4, 12),
         "reg_lambda": (0.001, 5),
         "reg_alpha": (0.001, 5),
         "colsample_bytree": (0.001, 1),
@@ -30,7 +30,8 @@ if __name__ == "__main__":
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "learning_rate": max(min(lgb_bo["learning_rate"], 1), 0),
+        "learning_rate": 0.005,
+        "max_depth": int(round(lgb_bo["max_depth"])),
         "reg_lambda": max(min(lgb_bo["reg_lambda"], 1), 0),
         "reg_alpha": max(min(lgb_bo["reg_alpha"], 1), 0),
         "colsample_bytree": max(min(lgb_bo["colsample_bytree"], 1), 0),

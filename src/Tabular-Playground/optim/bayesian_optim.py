@@ -11,7 +11,7 @@ from data.datasets import X, y
 
 
 def lgb_rmse_eval(
-    learning_rate: float,
+    max_depth: float,
     reg_lambda: float,
     reg_alpha: float,
     num_leaves: float,
@@ -24,7 +24,8 @@ def lgb_rmse_eval(
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "learning_rate": max(min(learning_rate, 1), 0),
+        "learning_rate": 0.005,
+        "max_depth": int(round(max_depth)),
         "reg_lambda": max(min(reg_lambda, 1), 0),
         "reg_alpha": max(min(reg_alpha, 1), 0),
         "colsample_bytree": max(min(colsample_bytree, 1), 0),
@@ -35,7 +36,7 @@ def lgb_rmse_eval(
     model = LGBMRegressor(**params)
     scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
-    return -np.mean(rmse_score)
+    return -np.min(rmse_score)
 
 
 def lgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
@@ -59,7 +60,7 @@ def cat_rmse_eval(
     model = CatBoostRegressor(**params)
     scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
-    return -np.mean(rmse_score)
+    return -np.min(rmse_score)
 
 
 def cat_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
@@ -90,7 +91,7 @@ def xgb_rmse_eval(
     model = XGBRegressor(**params)
     scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
-    return -np.mean(rmse_score)
+    return -np.min(rmse_score)
 
 
 def xgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:

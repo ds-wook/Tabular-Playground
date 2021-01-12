@@ -20,15 +20,15 @@ if __name__ == "__main__":
     parse.add_argument("--fold", type=int, help="Input num_fold", default=5)
     args = parse.parse_args()
 
-    lgb_params = pd.read_pickle(args.path + "lgb_optuna.pkl")
+    lgb_params = pd.read_pickle(args.path + "lgb_bayesian.pkl")
     lgb_model = LGBMRegressor(**lgb_params)
     lgb_preds = kfold_model(lgb_model, args.fold, X, y, X_test)
 
-    # xgb_params = load_params(args.path + "xgb_optim.pkl")
+    # xgb_params = pd.read_pickle(args.path + "xgb_optim.pkl")
     # xgb_model = XGBRegressor(**xgb_params)
     # xgb_preds = kfold_model(xgb_model, args.fold, X, y, X_test)
 
-    # cat_params = load_params(args.path + "xgb_optim.pkl")
+    # cat_params = pd.read_pickle(args.path + "xgb_optim.pkl")
     # cat_model = CatBoostRegressor(**cat_params)
     # cat_preds = kfold_model(cat_model, args.fold, X, y, X_test)
 
