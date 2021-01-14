@@ -23,5 +23,5 @@ model = lgb.train(
 
 params = model.params
 
-with open("../../res/lgb_optuna.pkl", "wb") as f:
+with open("../../res/lgb_optuna1.pkl", "wb") as f:
     pickle.dump(params, f)

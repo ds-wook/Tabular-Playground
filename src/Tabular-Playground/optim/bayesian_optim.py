@@ -6,12 +6,12 @@ from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
 from sklearn.model_selection import cross_val_score
-
+from sklearn.model_selection import KFold
 from data.datasets import X, y
 
 
 def lgb_rmse_eval(
-    learning_rate: float,
+    max_depth: float,
     reg_lambda: float,
     reg_alpha: float,
     num_leaves: float,
@@ -20,11 +20,13 @@ def lgb_rmse_eval(
     min_child_samples: float,
 ) -> float:
     params = {
-        "n_estimators": 30000,
+        "n_estimators": 20000,
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "learning_rate": max(min(learning_rate, 1), 0),
+        "learning_rate": 0.005,
+        "num_iterations": 5000,
+        "max_depth": int(round(max_depth)),
         "reg_lambda": max(min(reg_lambda, 1), 0),
         "reg_alpha": max(min(reg_alpha, 1), 0),
         "colsample_bytree": max(min(colsample_bytree, 1), 0),
@@ -33,14 +35,15 @@ def lgb_rmse_eval(
         "min_child_samples": int(round(min_child_samples)),
     }
     model = LGBMRegressor(**params)
-    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
+    kfold = KFold(n_splits=5, random_state=2021)
+    scores = cross_val_score(model, X, y, cv=kfold, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
     return -np.mean(rmse_score)
 
 
 def lgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
     lgbm_bo = BayesianOptimization(f=func, pbounds=params)
-    lgbm_bo.maximize(init_points=5, n_iter=25)
+    lgbm_bo.maximize(init_points=5, n_iter=35)
     return lgbm_bo.max["params"]
 
 
@@ -57,7 +60,8 @@ def cat_rmse_eval(
         "l2_leaf_reg": l2_leaf_reg,
     }
     model = CatBoostRegressor(**params)
-    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
+    kfold = KFold(n_splits=5, random_state=2021)
+    scores = cross_val_score(model, X, y, cv=kfold, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
     return -np.mean(rmse_score)
 
@@ -69,31 +73,29 @@ def cat_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float
 
 
 def xgb_rmse_eval(
-    learning_rate: float,
     gamma: float,
     max_depth: float,
-    subsample: float,
-    colsample_bytree: float,
     min_child_weight: float,
 ) -> float:
     params = {
         "n_estimators": 10000,
         "objective": "reg:squarederror",
         "eval_metric": "rmse",
-        "learning_rate": learning_rate,
+        "learning_rate": 0.01,
+        "subsample": 0.7,
+        "colsample_bytree": 1.0,
         "gamma": gamma,
-        "subsample": subsample,
-        "colsample_bytree": colsample_bytree,
         "max_depth": int(round(max_depth)),
         "min_child_weight": int(round(min_child_weight)),
     }
     model = XGBRegressor(**params)
-    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
+    kfold = KFold(n_splits=5, random_state=2021)
+    scores = cross_val_score(model, X, y, cv=kfold, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
     return -np.mean(rmse_score)
 
 
 def xgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
     xgb_bo = BayesianOptimization(f=func, pbounds=params)
-    xgb_bo.maximize(init_points=5, n_iter=15)
+    xgb_bo.maximize(init_points=5, n_iter=10)
     return xgb_bo.max["params"]
