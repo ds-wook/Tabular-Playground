@@ -17,7 +17,6 @@ I follow [black](https://pypi.org/project/black/) for code style. Black is a PEP
 |method|baseline|OOF(5-fold)| Public LB|Private LB|
 |------|:------:|:---------:|:--------:|:--------:|
 |LGBM bayesian_optim|-|-|-|-|
-|XGB bayesian_optim|-|-|-|-|
 |Cat bayesian_optim|-|-|-|-|
 |LGBM optuna|-|-|-|-|
-
+|XGB optuna|-|-|-|-|

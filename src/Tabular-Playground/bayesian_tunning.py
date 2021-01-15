@@ -30,7 +30,7 @@ if __name__ == "__main__":
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "learning_rate": 0.002,
+        "learning_rate": 0.005,
         "max_depth": int(round(lgb_bo["max_depth"])),
         "reg_lambda": max(min(lgb_bo["reg_lambda"], 1), 0),
         "reg_alpha": max(min(lgb_bo["reg_alpha"], 1), 0),

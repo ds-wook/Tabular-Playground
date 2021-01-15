@@ -6,7 +6,6 @@ from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
 from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import KFold
 from data.datasets import X, y
 
 
@@ -25,7 +24,6 @@ def lgb_rmse_eval(
         "verbosity": -1,
         "boosting_type": "gbdt",
         "learning_rate": 0.005,
-        "num_iterations": 5000,
         "max_depth": int(round(max_depth)),
         "reg_lambda": max(min(reg_lambda, 1), 0),
         "reg_alpha": max(min(reg_alpha, 1), 0),
@@ -35,8 +33,7 @@ def lgb_rmse_eval(
         "min_child_samples": int(round(min_child_samples)),
     }
     model = LGBMRegressor(**params)
-    kfold = KFold(n_splits=5, random_state=2021)
-    scores = cross_val_score(model, X, y, cv=kfold, scoring="neg_mean_squared_error")
+    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
     return -np.mean(rmse_score)
 
@@ -60,8 +57,7 @@ def cat_rmse_eval(
         "l2_leaf_reg": l2_leaf_reg,
     }
     model = CatBoostRegressor(**params)
-    kfold = KFold(n_splits=5, random_state=2021)
-    scores = cross_val_score(model, X, y, cv=kfold, scoring="neg_mean_squared_error")
+    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
     return -np.mean(rmse_score)
 
@@ -89,8 +85,7 @@ def xgb_rmse_eval(
         "min_child_weight": int(round(min_child_weight)),
     }
     model = XGBRegressor(**params)
-    kfold = KFold(n_splits=5, random_state=2021)
-    scores = cross_val_score(model, X, y, cv=kfold, scoring="neg_mean_squared_error")
+    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
     rmse_score = np.sqrt(-scores)
     return -np.mean(rmse_score)
 
