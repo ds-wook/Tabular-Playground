@@ -10,7 +10,7 @@ from tqdm import tqdm
 def kfold_model(
     model: Any, n_fold: int, train: pd.DataFrame, target: pd.Series, test: pd.DataFrame
 ) -> np.ndarray:
-    folds = KFold(n_splits=n_fold)
+    folds = KFold(n_splits=n_fold, random_state=48, shuffle=True)
     splits = folds.split(train, target)
     y_preds = np.zeros(test.shape[0])
     oof_preds = np.zeros(train.shape[0])

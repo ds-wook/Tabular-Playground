@@ -23,24 +23,19 @@ if __name__ == "__main__":
     X_train, X_valid, y_train, y_valid = train_test_split(
         X, y, test_size=0.1, random_state=0
     )
-    lgb_params = pd.read_pickle(args.path + "fea_lgb_bayesian1.pkl")
-    lgb_model = LGBMRegressor(**lgb_params)
-    lgb_preds = kfold_model(lgb_model, args.fold, X, y, X_test)
+    # lgb_params = pd.read_pickle(args.path + "lgb_optuna1.pkl")
+    # lgb_params["n_estimators"] = 20000
+    # lgb_model = LGBMRegressor(**lgb_params)
+    # lgb_preds = kfold_model(lgb_model, args.fold, X, y, X_test)
 
-    # xgb_params = pd.read_pickle(args.path + "xgb_bayesian1.pkl")
-    # xgb_model = XGBRegressor(**xgb_params)
-
-    # xgb_model.fit(
-    #     X,
-    #     y,
-    #     eval_set=[(X_train, y_train), (X_valid, y_valid)],
-    #     early_stopping_rounds=10,
-    # )
-    # xgb_preds = xgb_model.predict(X_test)
+    xgb_params = pd.read_pickle(args.path + "xgb_optuna1.pkl")
+    xgb_params["n_estimators"] = 4000
+    xgb_model = XGBRegressor(**xgb_params)
+    xgb_preds = kfold_model(xgb_model, args.fold, X, y, X_test)
 
     # cat_params = pd.read_pickle(args.path + "cat_bayesian1.pkl")
     # cat_model = CatBoostRegressor(**cat_params)
     # cat_preds = kfold_model(cat_model, args.fold, X, y, X_test)
 
-    submission["target"] = lgb_preds
+    submission["target"] = xgb_preds
     submission.to_csv(args.path + args.file, index=False)

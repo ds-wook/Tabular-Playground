@@ -6,10 +6,13 @@ from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 from data.datasets import X, y
 
 
 def lgb_rmse_eval(
+    learning_rate: float,
     max_depth: float,
     reg_lambda: float,
     reg_alpha: float,
@@ -18,12 +21,15 @@ def lgb_rmse_eval(
     subsample: float,
     min_child_samples: float,
 ) -> float:
+    X_train, X_valid, y_train, y_valid = train_test_split(
+        X, y, test_size=0.1, random_state=2020
+    )
     params = {
         "n_estimators": 20000,
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "learning_rate": 0.005,
+        "learning_rate": max(min(learning_rate, 1), 0),
         "max_depth": int(round(max_depth)),
         "reg_lambda": max(min(reg_lambda, 1), 0),
         "reg_alpha": max(min(reg_alpha, 1), 0),
@@ -33,9 +39,10 @@ def lgb_rmse_eval(
         "min_child_samples": int(round(min_child_samples)),
     }
     model = LGBMRegressor(**params)
-    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
-    rmse_score = np.sqrt(-scores)
-    return -np.mean(rmse_score)
+    model.fit(X_train, y_train)
+    preds = model.predict(X_valid)
+    rmse_score = mean_squared_error(y_valid, preds)
+    return -np.sqrt(rmse_score)
 
 
 def lgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:

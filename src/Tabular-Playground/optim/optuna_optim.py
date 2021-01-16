@@ -48,6 +48,7 @@ def lgb_objective(trial: optuna.Trial) -> float:
     )
     params = {
         "boosting_type": "gbdt",
+        "n_estimators": 20000,
         "num_leaves": trial.suggest_int("num_leaves", 100, 200),
         "max_depth": trial.suggest_int("max_depth", 4, 12),
         "reg_lambda": trial.suggest_loguniform("reg_lambda", 1e-8, 1.0),

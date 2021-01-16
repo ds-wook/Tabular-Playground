@@ -15,12 +15,13 @@ np.seterr(divide="ignore", invalid="ignore")
 
 if __name__ == "__main__":
     lgb_params = {
+        "learning_rate": (1e-13, 0.01),
         "max_depth": (4, 12),
-        "reg_lambda": (1e-13, 5),
-        "reg_alpha": (1e-13, 2),
-        "colsample_bytree": (0.001, 1),
-        "subsample": (0.001, 1),
-        "num_leaves": (100, 200),
+        "reg_lambda": (1e-13, 1),
+        "reg_alpha": (1e-13, 1),
+        "colsample_bytree": (0.01, 1),
+        "subsample": (0.01, 1),
+        "num_leaves": (100, 300),
         "min_child_samples": (10, 50),
     }
     lgb_bo = lgb_parameter(lgb_rmse_eval, lgb_params)
@@ -30,7 +31,7 @@ if __name__ == "__main__":
         "objective": "regression",
         "verbosity": -1,
         "boosting_type": "gbdt",
-        "learning_rate": 0.005,
+        "learning_rate": max(min(lgb_bo["learning_rate"], 1), 0),
         "max_depth": int(round(lgb_bo["max_depth"])),
         "reg_lambda": max(min(lgb_bo["reg_lambda"], 1), 0),
         "reg_alpha": max(min(lgb_bo["reg_alpha"], 1), 0),
