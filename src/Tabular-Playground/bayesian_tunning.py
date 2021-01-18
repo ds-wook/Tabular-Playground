@@ -41,9 +41,10 @@ if __name__ == "__main__":
         "min_child_samples": int(round(lgb_bo["min_child_samples"])),
     }
 
-    with open("../../res/fea_lgb_bayesian1.pkl", "wb") as f:
+    with open("../../res/gmm_lgb_bayesian2.pkl", "wb") as f:
         pickle.dump(lgb_params, f)
 
+    """
     cat_params = {
         "depth": (4, 10),
         "bagging_temperature": (0.1, 10),
@@ -89,3 +90,4 @@ if __name__ == "__main__":
 
     with open("../../res/fea_xgb_bayesian1.pkl", "wb") as f:
         pickle.dump(xgb_params, f)
+    """

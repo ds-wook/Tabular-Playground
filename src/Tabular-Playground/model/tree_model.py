@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 def kfold_model(
     model: Any, n_fold: int, train: pd.DataFrame, target: pd.Series, test: pd.DataFrame
-) -> np.ndarray:
+) -> Tuple[np.ndarray, float]:
     folds = KFold(n_splits=n_fold, random_state=48, shuffle=True)
     splits = folds.split(train, target)
     y_preds = np.zeros(test.shape[0])
@@ -43,5 +43,6 @@ def kfold_model(
             oof_preds[valid_index] = model.predict(X_valid)
             y_preds += model.predict(test) / n_fold
         del X_train, X_valid, y_train, y_valid
-    print(f"OOF Score: {mean_squared_error(target, oof_preds, squared=False):.5f}")
-    return y_preds
+    scores = mean_squared_error(target, oof_preds, squared=False)
+    print(f"OOF Score: {scores:.5f}")
+    return y_preds, scores

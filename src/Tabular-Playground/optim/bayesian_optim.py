@@ -8,7 +8,9 @@ from xgboost import XGBRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from data.datasets import X, y
+
+from data.datasets import X, y, X_test
+from model.tree_model import kfold_model
 
 
 def lgb_rmse_eval(
@@ -21,9 +23,6 @@ def lgb_rmse_eval(
     subsample: float,
     min_child_samples: float,
 ) -> float:
-    X_train, X_valid, y_train, y_valid = train_test_split(
-        X, y, test_size=0.1, random_state=2020
-    )
     params = {
         "n_estimators": 20000,
         "objective": "regression",
@@ -39,10 +38,8 @@ def lgb_rmse_eval(
         "min_child_samples": int(round(min_child_samples)),
     }
     model = LGBMRegressor(**params)
-    model.fit(X_train, y_train)
-    preds = model.predict(X_valid)
-    rmse_score = mean_squared_error(y_valid, preds)
-    return -np.sqrt(rmse_score)
+    preds, scores = kfold_model(model, 5, X, y, X_test)
+    return -scores
 
 
 def lgb_parameter(func: Any, params: Dict[str, Tuple[float]]) -> Dict[str, float]:
