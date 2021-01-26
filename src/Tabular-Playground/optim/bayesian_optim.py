@@ -6,7 +6,8 @@ from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
 from sklearn.model_selection import cross_val_score
-
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 from data.datasets import X, y
 
 
@@ -19,6 +20,9 @@ def lgb_rmse_eval(
     subsample: float,
     min_child_samples: float,
 ) -> float:
+    X_train, X_valid, y_train, y_valid = train_test_split(
+        X, y, test_size=0.1, random_state=2021
+    )
     params = {
         "n_estimators": 20000,
         "objective": "regression",
@@ -34,8 +38,16 @@ def lgb_rmse_eval(
         "min_child_samples": int(round(min_child_samples)),
     }
     model = LGBMRegressor(**params)
-    scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_error")
-    rmse_score = np.sqrt(-scores)
+    model.fit(
+        X_train,
+        y_train,
+        eval_set=[(X_train, y_train), (X_valid, y_valid)],
+        early_stopping_rounds=100,
+        verbose=100,
+        eval_metric="rmse",
+    )
+    preds = model.predict(X_valid)
+    rmse_score = np.sqrt(mean_squared_error(y_valid, preds))
     return -np.min(rmse_score)
 
 

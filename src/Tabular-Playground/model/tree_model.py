@@ -43,5 +43,5 @@ def kfold_model(
             oof_preds[valid_index] = model.predict(X_valid)
             y_preds += model.predict(test) / n_fold
         del X_train, X_valid, y_train, y_valid
-    print(f"OOF Score{mean_squared_error(target, oof_preds, squared=False):.5f}")
+    print(f"OOF Score: {mean_squared_error(target, oof_preds, squared=False):.5f}")
     return y_preds

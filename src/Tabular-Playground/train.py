@@ -20,7 +20,7 @@ if __name__ == "__main__":
     parse.add_argument("--fold", type=int, help="Input num_fold", default=5)
     args = parse.parse_args()
 
-    lgb_params = pd.read_pickle(args.path + "lgb_bayesian.pkl")
+    lgb_params = pd.read_pickle(args.path + "fea_lgb_optuna2.pkl")
     lgb_model = LGBMRegressor(**lgb_params)
     lgb_preds = kfold_model(lgb_model, args.fold, X, y, X_test)
 
